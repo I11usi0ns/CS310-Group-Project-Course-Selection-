@@ -1,0 +1,105 @@
+create database SELECTION;
+use SELECTION;
+
+create table Courses_addition
+	(course_id int,
+     instructor varchar(25),
+     title varchar(20),
+     semester varchar(10),
+     session_id int,
+     days varchar(12),
+     start_time TIME,
+     end_time TIME,
+     status_id varchar(10),
+     primary key (course_id),
+     foreign key (title) references Courses(title)
+     on delete cascade
+    );
+create table Courses
+	(
+     type_id varchar(4), -- lec/rec/lab
+     title varchar(20),
+     units numeric(2,1) check(units >= 0 and units <= 4),
+     primary key(title)
+    );
+
+create table Pre_requisite
+	(id_first varchar(12), -- The prerequisite course
+     id_second varchar(12), -- The course that requires a prerequisite
+     id_or int,
+     primary key (id_or),
+     foreign key (id_second) references Courses (title)
+		on delete cascade,
+	foreign key (id_first) references Courses (title)
+		on delete cascade
+	);
+
+create table Anti_requisite
+	(id_1 varchar(12),
+     id_2 varchar(12),
+     primary key (id_1,id_2),
+     foreign key (id_1) references Courses (title)
+		on delete cascade,
+	foreign key (id_2) references Courses (title)
+		on delete cascade
+	);
+    
+create table Requirements
+	(requirement_id int,
+     units_needed numeric(4,1),
+     requirement_type varchar(20),
+     primary key (requirement_id)
+	);
+    
+-- Courses_requirement refers to the requirement a course belongs to
+create table Courses_requirements
+	(course_id int,
+     requirement_id int,
+     major varchar(64),
+     subject_id varchar(15),
+     primary key (course_id,requirement_id),
+     foreign key (requirement_id) references Requirements (requirement_id)
+		on delete cascade
+	);
+    
+create table Students
+	(id varchar(8),
+     major varchar(64),
+     subject_id varchar(15),
+     primary key (id)
+	);
+
+create table Courses_taken 
+	(course_id int,
+     student_id varchar(8),
+     primary key (course_id,student_id),
+     foreign key (course_id) references Courses(course_id)
+		on delete cascade,
+	 foreign key (student_id) references Students(id)
+		on delete cascade
+	);
+
+create table Courses_to_be_taken
+	(student_id varchar(8),
+     course_id int,
+     semester varchar(10),
+     session_id int,
+     primary key (student_id, course_id),
+     foreign key (course_id) references Courses(course_id)
+		on delete cascade,
+	 foreign key (student_id) references Students(id)
+		on delete cascade
+	);
+    
+create table Plan
+	(student_id varchar(8),
+     course_id int,
+     primary key (student_id,course_id),
+     foreign key (course_id) references Courses(course_id)
+		on delete cascade,
+	 foreign key (student_id) references Students(id)
+		on delete cascade
+	);
+
+
+
